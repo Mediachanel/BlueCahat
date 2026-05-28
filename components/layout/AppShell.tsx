@@ -7,8 +7,8 @@ import { MobileNav } from "@/components/layout/MobileNav";
 
 export function AppShell({ children, title = "BlueChat" }: { children: ReactNode; title?: string }) {
   return (
-    <div className="h-screen overflow-hidden bg-bluechat-bg text-bluechat-text dark:bg-slate-950 dark:text-slate-50">
-      <div className="flex h-screen">
+    <div className="h-[100dvh] overflow-hidden bg-bluechat-bg text-bluechat-text dark:bg-slate-950 dark:text-slate-50">
+      <div className="flex h-[100dvh]">
         <Sidebar />
         <main className="flex min-w-0 flex-1 flex-col overflow-hidden pb-20 md:pb-0">
           <Topbar title={title} />

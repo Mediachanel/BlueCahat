@@ -4,6 +4,8 @@ import type { ChatMessage } from "@/types";
 import { cn, formatTime } from "@/lib/utils";
 import { AttachmentPreview } from "@/components/chat/AttachmentPreview";
 
+const readableQuickReactions = ["\u{1F44D}", "\u{2764}\u{FE0F}", "\u{1F602}", "\u{1F62E}", "\u{1F622}", "\u{1F64F}"];
+
 const quickReactions = ["👍", "❤️", "😂", "😮", "😢", "🙏"];
 
 function getMessageStatus(message: ChatMessage) {
@@ -148,7 +150,7 @@ export function MessageBubble({
           <div ref={menuRef} className={cn("absolute top-full z-40 mt-2 w-64 text-sm", mine ? "right-0" : "left-0")}>
             {canUseMessage ? (
               <div className="mb-2 flex w-fit items-center gap-1 rounded-full bg-white p-1 shadow-soft dark:bg-slate-900">
-                {quickReactions.map((item) => (
+                {(readableQuickReactions.length === quickReactions.length ? readableQuickReactions : quickReactions).map((item) => (
                   <button key={item} type="button" onClick={() => setQuickReaction(item)} className="grid h-9 w-9 place-items-center rounded-full text-lg hover:bg-blue-50 dark:hover:bg-slate-800">
                     {item}
                   </button>

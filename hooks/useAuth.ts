@@ -8,10 +8,29 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/auth/me")
-      .then((response) => response.json())
-      .then((data) => setUser(data.user))
-      .finally(() => setLoading(false));
+    let active = true;
+
+    async function fetchCurrentUser() {
+      const response = await fetch("/api/auth/me");
+      const data = await response.json();
+      if (!active) return;
+      setUser(data.user);
+      setLoading(false);
+    }
+
+    function refreshCurrentUser() {
+      fetchCurrentUser().catch(() => undefined);
+    }
+
+    fetchCurrentUser().catch(() => {
+      if (active) setLoading(false);
+    });
+
+    window.addEventListener("bluechat:user-updated", refreshCurrentUser);
+    return () => {
+      active = false;
+      window.removeEventListener("bluechat:user-updated", refreshCurrentUser);
+    };
   }, []);
 
   return { user, loading, setUser };

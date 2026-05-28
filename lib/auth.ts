@@ -14,6 +14,7 @@ export type AuthUser = {
   email: string | null;
   phone: string;
   avatar: string | null;
+  bio: string | null;
   role: UserRole;
 };
 
@@ -28,6 +29,10 @@ function jwtSecret() {
     throw new Error("JWT_SECRET is not configured");
   }
   return secret;
+}
+
+function shouldUseSecureCookie() {
+  return (process.env.NEXT_PUBLIC_APP_URL ?? "").startsWith("https://");
 }
 
 export async function hashPassword(password: string) {
@@ -47,7 +52,7 @@ export async function setSessionCookie(token: string) {
   cookieStore.set(COOKIE_NAME, token, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: shouldUseSecureCookie(),
     path: "/",
     maxAge: 60 * 60 * 24 * 7
   });
@@ -85,6 +90,7 @@ export async function getCurrentUser(request?: NextRequest | Request): Promise<A
         email: true,
         phone: true,
         avatar: true,
+        bio: true,
         role: true,
         isActive: true
       }
@@ -99,6 +105,7 @@ export async function getCurrentUser(request?: NextRequest | Request): Promise<A
       email: user.email,
       phone: user.phone,
       avatar: user.avatar,
+      bio: user.bio,
       role: user.role
     };
   } catch {

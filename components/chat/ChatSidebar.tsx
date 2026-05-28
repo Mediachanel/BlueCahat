@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { Archive, Camera, MoreVertical, Plus, SquarePen } from "lucide-react";
+import { Archive, MoreVertical, SquarePen } from "lucide-react";
 import { usePathname } from "next/navigation";
 import type { ConversationSummary, SafeUser } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -29,7 +29,7 @@ export function ChatSidebar({
   realtimeState?: "connecting" | "live" | "fallback";
 }) {
   const pathname = usePathname();
-  const [filter, setFilter] = useState<"all" | "unread" | "favorite" | "group" | "archived">("all");
+  const [filter, setFilter] = useState<"all" | "unread" | "group" | "archived">("all");
   const [composeOpen, setComposeOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [chatSearch, setChatSearch] = useState("");
@@ -42,7 +42,7 @@ export function ChatSidebar({
     const filtered = (() => {
       if (filter === "group") return conversations.filter((conversation) => conversation.type === "GROUP");
       if (filter === "unread") return conversations.filter((conversation) => (conversation.unreadCount ?? 0) > 0);
-      if (filter === "favorite" || filter === "archived") return [];
+      if (filter === "archived") return [];
       return conversations;
     })();
 
@@ -89,7 +89,10 @@ export function ChatSidebar({
     return (
       <button
         onClick={() => setFilter(value)}
-        className={cn("rounded-full border border-slate-200 px-4 py-2 text-slate-600 dark:border-slate-800 dark:text-slate-300", active && "border-transparent bg-bluechat-light text-bluechat-navy")}
+        className={cn(
+          "h-8 shrink-0 rounded-full border border-slate-200 px-3 text-sm font-medium text-slate-600 transition hover:bg-[#f0f2f5] dark:border-slate-800 dark:text-slate-300",
+          active && "border-[#9de7a5] bg-[#d9fdd3] text-[#008069] hover:bg-[#d9fdd3]"
+        )}
       >
         {children}
       </button>
@@ -97,66 +100,58 @@ export function ChatSidebar({
   }
 
   return (
-    <aside className="relative flex h-screen flex-col overflow-hidden border-r border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950 max-md:h-[100dvh] max-md:border-r-0">
-      <div className="p-5 pb-3 max-md:px-5 max-md:pt-5">
-        <div className="hidden items-center justify-between pb-5 text-xs font-bold text-slate-600 max-md:flex">
-          <span>12.10</span>
-          <span className="rounded-full bg-slate-100 px-2 py-1">83</span>
-        </div>
-        <div className="mb-5 flex items-center justify-between max-md:mb-4">
-          <h2 className="text-2xl font-black text-bluechat-navy dark:text-blue-100 max-md:text-3xl">BlueChat</h2>
+    <aside className="relative flex h-[100dvh] flex-col overflow-hidden border-r border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950 max-md:border-r-0">
+      <div className="px-4 pb-1.5 pt-3">
+        <div className="mb-2 flex h-9 items-center justify-between">
+          <div className="flex min-w-0 items-center gap-2">
+            <h2 className="truncate text-[22px] font-semibold leading-none text-[#008069] dark:text-emerald-300">BlueChat</h2>
+            <span
+              title={realtimeState === "live" ? "Realtime aktif" : "Mode sinkron otomatis"}
+              className={cn("mt-1 h-2 w-2 shrink-0 rounded-full", realtimeState === "live" ? "bg-[#00a884]" : "bg-amber-500")}
+            />
+          </div>
           <div className="flex items-center gap-1">
-            <Button size="icon" variant="ghost" aria-label="Kamera" className="hidden max-md:inline-flex" onClick={() => alert("Kamera siap dikembangkan untuk capture langsung. Saat ini gunakan upload lampiran di ruang chat.")}><Camera size={25} /></Button>
-            <Button size="icon" variant="ghost" aria-label="Buat chat" onClick={() => setComposeOpen(true)}><SquarePen size={19} /></Button>
+            <Button size="icon" variant="ghost" aria-label="Buat chat" className="h-8 w-8 rounded-full text-slate-950 hover:bg-[#f0f2f5] dark:text-slate-100" onClick={() => setComposeOpen(true)}><SquarePen size={18} /></Button>
             <div className="relative">
-              <Button size="icon" variant="ghost" aria-label="Menu chat" onClick={() => setMenuOpen((open) => !open)}><MoreVertical size={19} /></Button>
+              <Button size="icon" variant="ghost" aria-label="Menu chat" className="h-8 w-8 rounded-full text-slate-950 hover:bg-[#f0f2f5] dark:text-slate-100" onClick={() => setMenuOpen((open) => !open)}><MoreVertical size={20} /></Button>
               {menuOpen ? (
-                <div className="absolute right-0 top-11 z-30 w-52 rounded-2xl border border-slate-200 bg-white p-2 text-sm shadow-soft dark:border-slate-800 dark:bg-slate-950">
-                  <button onClick={() => setComposeOpen(true)} className="w-full rounded-xl px-3 py-2 text-left hover:bg-blue-50 dark:hover:bg-slate-900">Chat baru</button>
-                  <Link href="/profile" className="block rounded-xl px-3 py-2 hover:bg-blue-50 dark:hover:bg-slate-900">Pengaturan</Link>
-                  <Link href="/stories" className="block rounded-xl px-3 py-2 hover:bg-blue-50 dark:hover:bg-slate-900">Status</Link>
-                  <button onClick={() => onRefresh?.()} className="w-full rounded-xl px-3 py-2 text-left hover:bg-blue-50 dark:hover:bg-slate-900">Refresh chat</button>
+                <div className="absolute right-0 top-10 z-30 w-52 rounded-lg border border-slate-200 bg-white p-2 text-sm shadow-lg dark:border-slate-800 dark:bg-slate-950">
+                  <button onClick={() => setComposeOpen(true)} className="w-full rounded-md px-3 py-2 text-left hover:bg-[#f0f2f5] dark:hover:bg-slate-900">Chat baru</button>
+                  <Link href="/profile" className="block rounded-md px-3 py-2 hover:bg-[#f0f2f5] dark:hover:bg-slate-900">Pengaturan</Link>
+                  <Link href="/stories" className="block rounded-md px-3 py-2 hover:bg-[#f0f2f5] dark:hover:bg-slate-900">Status</Link>
+                  <button onClick={() => onRefresh?.()} className="w-full rounded-md px-3 py-2 text-left hover:bg-[#f0f2f5] dark:hover:bg-slate-900">Refresh chat</button>
                 </div>
               ) : null}
             </div>
           </div>
         </div>
         <SearchChat value={chatSearch} onChange={setChatSearch} />
-        <div className="mt-2 flex items-center gap-2 text-xs text-slate-500">
-          <span className={cn("h-2 w-2 rounded-full", realtimeState === "live" ? "bg-emerald-500" : "bg-amber-500")} />
-          {realtimeState === "live" ? "Realtime aktif" : "Mode sinkron otomatis"}
-        </div>
-        <div className="mt-3 flex gap-2 overflow-x-auto pb-1 text-sm font-semibold max-md:text-sm">
+        <div className="mt-2 flex gap-2 overflow-x-auto pb-1">
           <FilterButton value="all">Semua</FilterButton>
-          <FilterButton value="unread">Belum dibaca {totalUnread}</FilterButton>
-          <FilterButton value="favorite">Favorit</FilterButton>
-          <FilterButton value="group">Grup {groups}</FilterButton>
-          <button onClick={() => setComposeOpen(true)} className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-slate-200 text-slate-600 dark:border-slate-800 dark:text-slate-300"><Plus size={16} /></button>
+          <FilterButton value="unread">Belum dibaca{totalUnread ? ` ${totalUnread}` : ""}</FilterButton>
+          <FilterButton value="group">Grup{groups ? ` ${groups}` : ""}</FilterButton>
         </div>
       </div>
-      <button onClick={() => setFilter("archived")} className="flex items-center gap-4 px-5 py-3 text-left text-sm text-slate-600 hover:bg-blue-50 dark:text-slate-300 dark:hover:bg-slate-900">
-        <Archive size={18} />
-        <span>Diarsipkan</span>
-        <span className="ml-auto font-bold text-bluechat-blue">@</span>
+      <button onClick={() => setFilter("archived")} className="mx-3 mb-1 flex items-center gap-5 rounded-lg px-4 py-2.5 text-left text-[15px] text-slate-600 hover:bg-[#f0f2f5] dark:text-slate-300 dark:hover:bg-slate-900">
+        <Archive size={18} className="text-slate-500" />
+        <span className="font-medium">Diarsipkan</span>
+        <span className="ml-auto text-sm font-semibold text-[#008069]">{filter === "archived" ? visibleConversations.length : ""}</span>
       </button>
-      <div className="space-y-1 overflow-y-auto px-3 pb-28 max-md:px-4">
+      <div className="overflow-y-auto pb-20">
         {visibleConversations.map((conversation) => (
           <ChatListItem key={conversation.id} conversation={conversation} currentUserId={currentUserId} active={conversation.id === activeConversationId} onClick={() => onSelect(conversation.id)} />
         ))}
         {!visibleConversations.length ? <p className="p-4 text-sm text-bluechat-muted">{filter === "archived" ? "Belum ada chat yang diarsipkan." : "Belum ada chat. Cari user untuk mulai ngobrol."}</p> : null}
       </div>
-      <button onClick={() => setComposeOpen(true)} aria-label="Buat chat baru" className="absolute bottom-24 right-6 hidden h-14 w-14 place-items-center rounded-2xl bg-bluechat-blue text-white shadow-[0_12px_30px_rgba(30,136,229,0.35)] max-md:grid">
-        <Plus size={28} />
-      </button>
-      <nav className="absolute bottom-0 left-0 right-0 hidden grid-cols-5 border-t border-slate-100 bg-white px-3 py-3 dark:border-slate-800 dark:bg-slate-950 max-md:grid">
+      <nav className="absolute bottom-0 left-0 right-0 hidden grid-cols-5 border-t border-slate-100 bg-white px-2 py-1.5 dark:border-slate-800 dark:bg-slate-950 max-md:grid">
         {mobileTabs.map(({ href, label, icon: Icon }) => {
           const active = isNavItemActive(pathname, href);
           const badge = href === "/chat" ? totalUnread : 0;
           return (
-          <Link key={href} href={href} aria-current={active ? "page" : undefined} className="grid place-items-center gap-1 text-xs font-bold text-slate-700 dark:text-slate-300">
-            <span className={cn("relative grid h-10 w-16 place-items-center rounded-full", active && "bg-bluechat-light text-bluechat-navy")}>
-              <Icon size={21} />
-              {badge > 0 ? <span className="absolute right-3 top-0 grid h-5 min-w-5 place-items-center rounded-full bg-bluechat-blue px-1 text-[10px] text-white">{badge > 99 ? "99+" : badge}</span> : null}
+          <Link key={href} href={href} aria-current={active ? "page" : undefined} className="grid place-items-center gap-0.5 py-1 text-[11px] font-semibold text-slate-700 dark:text-slate-300">
+            <span className={cn("relative grid h-8 w-12 place-items-center rounded-full", active && "bg-[#d9fdd3] text-[#008069]")}>
+              <Icon size={19} />
+              {badge > 0 ? <span className="absolute right-1.5 top-0 grid h-4 min-w-4 place-items-center rounded-full bg-[#00a884] px-1 text-[9px] text-white">{badge > 99 ? "99+" : badge}</span> : null}
             </span>
             {label}
           </Link>

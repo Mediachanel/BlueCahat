@@ -56,8 +56,8 @@ export function ChatLayout() {
   ]);
 
   return (
-    <div className="grid h-screen grid-cols-[64px_minmax(320px,480px)_1fr] overflow-hidden bg-white dark:bg-slate-950 max-md:block">
-      <aside className="flex h-screen w-16 flex-col items-center justify-between border-r border-slate-200 bg-[#f4f7fb] px-2 py-4 dark:border-slate-800 dark:bg-slate-900 max-md:hidden">
+    <div className="grid h-[100dvh] grid-cols-[64px_minmax(320px,480px)_1fr] overflow-hidden bg-white dark:bg-slate-950 max-md:block">
+      <aside className="flex h-[100dvh] w-16 flex-col items-center justify-between border-r border-slate-200 bg-[#f4f7fb] px-2 py-4 dark:border-slate-800 dark:bg-slate-900 max-md:hidden">
         <div className="flex flex-col items-center gap-3">
           <div className="relative mx-auto mb-3 h-10 w-10 overflow-hidden rounded-2xl bg-white shadow-sm">
             <Image src="/logo/app-icon.png" alt="BlueChat" fill sizes="40px" className="object-cover" priority />
@@ -95,10 +95,10 @@ export function ChatLayout() {
           <Avatar name={user?.name ?? "BlueChat"} src={user?.avatar} online />
         </div>
       </aside>
-      <div className={cn("h-screen", chat.activeConversationId && "max-md:hidden")}>
+      <div className={cn("h-[100dvh]", chat.activeConversationId && "max-md:hidden")}>
         <ChatSidebar conversations={chat.conversations} currentUserId={user?.id} activeConversationId={chat.activeConversationId} onSelect={chat.setActiveConversationId} onRefresh={chat.fetchConversations} realtimeState={chat.realtimeState} />
       </div>
-      <div className={cn("h-screen", !chat.activeConversationId && "max-md:hidden")}>
+      <div className={cn("h-[100dvh]", !chat.activeConversationId && "max-md:hidden")}>
         <ConversationWindow conversation={activeConversation} messages={chat.messages} currentUserId={user?.id} onSend={chat.sendMessage} typing={chat.typingUsers.some((id) => id !== user?.id)} onBack={() => chat.setActiveConversationId(null)} onTypingStart={chat.startTyping} onTypingStop={chat.stopTyping} onStartCall={call.startCall} onDeleteMessage={chat.deleteMessage} onPinMessage={chat.pinMessage} onOpenPrivateChat={chat.openPrivateConversation} appearanceSettings={appearanceSettings} />
       </div>
       <CallOverlay call={call.activeCall} localStream={call.localStream} remoteStream={call.remoteStream} onAccept={call.acceptCall} onReject={call.rejectCall} onEnd={call.endCall} onToggleMute={call.toggleMute} onToggleCamera={call.toggleCamera} />

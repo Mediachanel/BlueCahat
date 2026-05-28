@@ -29,19 +29,41 @@ function AvatarPreview({ name, src, onClose }: { name: string; src: string; onCl
   );
 }
 
+function resolveAvatarSrc(src?: string | null) {
+  const value = src?.trim();
+  if (!value) return "/avatars/default-user.png";
+  if (value.startsWith("/")) return value;
+
+  try {
+    const url = new URL(value);
+    if (url.protocol === "https:") return value;
+  } catch {
+    return "/avatars/default-user.png";
+  }
+
+  return "/avatars/default-user.png";
+}
+
 export function Avatar({ name, src, online, previewable }: { name: string; src?: string | null; online?: boolean; previewable?: boolean }) {
   const [previewOpen, setPreviewOpen] = useState(false);
-  const imageSrc = src || "/avatars/default-user.png";
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
+  const imageSrc = resolveAvatarSrc(src);
+  const showImage = failedSrc !== imageSrc;
+  const canPreview = Boolean(previewable && showImage);
   const content = (
     <>
-      {imageSrc ? <Image src={imageSrc} alt={name} fill sizes="44px" className="object-cover" /> : <div className="grid h-full place-items-center text-sm font-bold">{initials(name)}</div>}
+      {showImage ? (
+        <Image src={imageSrc} alt={name} fill sizes="44px" className="object-cover" onError={() => setFailedSrc(imageSrc)} />
+      ) : (
+        <div className="grid h-full place-items-center text-sm font-bold">{initials(name)}</div>
+      )}
       {online !== undefined ? <span className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white ${online ? "bg-emerald-500" : "bg-slate-300"}`} /> : null}
     </>
   );
 
   return (
     <>
-      {previewable ? (
+      {canPreview ? (
         <button type="button" onClick={() => setPreviewOpen(true)} className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full bg-bluechat-light text-bluechat-navy" aria-label={`Preview foto ${name}`}>
           {content}
         </button>
@@ -50,7 +72,7 @@ export function Avatar({ name, src, online, previewable }: { name: string; src?:
           {content}
         </div>
       )}
-      {previewOpen ? <AvatarPreview name={name} src={imageSrc} onClose={() => setPreviewOpen(false)} /> : null}
+      {previewOpen && showImage ? <AvatarPreview name={name} src={imageSrc} onClose={() => setPreviewOpen(false)} /> : null}
     </>
   );
 }

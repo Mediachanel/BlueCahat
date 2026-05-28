@@ -16,7 +16,7 @@ export function Sidebar() {
   const profileActive = isNavItemActive(pathname, "/profile");
 
   return (
-    <aside className="hidden h-screen w-16 shrink-0 flex-col items-center justify-between border-r border-slate-200 bg-[#f4f7fb] px-2 py-4 dark:border-slate-800 dark:bg-slate-900 md:flex">
+    <aside className="hidden h-[100dvh] w-16 shrink-0 flex-col items-center justify-between border-r border-slate-200 bg-[#f4f7fb] px-2 py-4 dark:border-slate-800 dark:bg-slate-900 md:flex">
       <div className="flex flex-col items-center gap-3">
         <Link href="/chat" aria-label="BlueChat" title="BlueChat" className="relative mx-auto mb-3 h-10 w-10 overflow-hidden rounded-2xl bg-white shadow-sm">
           <Image src="/logo/app-icon.png" alt="BlueChat" fill sizes="40px" className="object-cover" priority />

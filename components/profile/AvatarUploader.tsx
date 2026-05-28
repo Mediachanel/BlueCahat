@@ -5,9 +5,10 @@ import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { Scissors, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export function AvatarUploader() {
+export function AvatarUploader({ onUploaded }: { onUploaded?: (avatar: string) => void }) {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [notice, setNotice] = useState("");
   const [zoom, setZoom] = useState(1);
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
@@ -68,16 +69,27 @@ export function AvatarUploader() {
   async function upload() {
     if (!file) return;
     setLoading(true);
-    const croppedFile = await createCroppedAvatar();
-    const form = new FormData();
-    form.append("file", croppedFile ?? file);
-    const response = await fetch("/api/users/avatar", { method: "PATCH", body: form });
-    setLoading(false);
-    if (!response.ok) {
-      alert("Upload avatar gagal. Pastikan file gambar valid dan ukurannya tidak terlalu besar.");
-      return;
+    setNotice("");
+    try {
+      const croppedFile = await createCroppedAvatar();
+      const form = new FormData();
+      form.append("file", croppedFile ?? file);
+      const response = await fetch("/api/users/avatar", { method: "PATCH", body: form });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        setNotice(data.message ?? "Upload avatar gagal. Pastikan file gambar valid dan ukurannya tidak terlalu besar.");
+        return;
+      }
+      const avatar = data.user?.avatar ?? data.upload?.fileUrl;
+      if (avatar) onUploaded?.(avatar);
+      window.dispatchEvent(new Event("bluechat:user-updated"));
+      setFile(null);
+      setNotice("Foto profil berhasil diperbarui.");
+    } catch {
+      setNotice("Upload avatar gagal. Pilih file gambar yang valid.");
+    } finally {
+      setLoading(false);
     }
-    location.reload();
   }
 
   return (
@@ -125,6 +137,7 @@ export function AvatarUploader() {
           </label>
         </div>
       ) : null}
+      {notice ? <p className="mt-3 rounded-xl bg-blue-50 px-3 py-2 text-sm font-semibold text-bluechat-navy dark:bg-slate-900 dark:text-blue-100">{notice}</p> : null}
     </div>
   );
 }

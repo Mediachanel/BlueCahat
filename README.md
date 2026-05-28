@@ -9,7 +9,7 @@ BlueChat adalah aplikasi messaging modern bernuansa biru dengan identitas visual
 - Socket.IO
 - Tailwind CSS, shadcn/ui-style components, lucide-react
 - Zod, bcryptjs, JWT cookie session
-- Upload local di `public/uploads`, siap dikembangkan ke R2/S3
+- Upload lokal ke disk server, cocok untuk Armbian/CasaOS dengan volume persisten
 
 ## Instalasi
 
@@ -44,10 +44,41 @@ JWT_SECRET="change-this-secret"
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
 NEXT_PUBLIC_SOCKET_URL="http://localhost:3001"
 UPLOAD_DIR="public/uploads"
+UPLOAD_PUBLIC_PATH="/uploads"
 MAX_UPLOAD_SIZE_MB="10"
 ```
 
 Catatan: karakter `@` pada password harus ditulis sebagai `%40` di `DATABASE_URL`.
+
+## Upload di Armbian/CasaOS
+
+Untuk server CasaOS, simpan file upload di folder persisten host dan mount ke container/app. Contoh env production:
+
+```env
+UPLOAD_DIR="/DATA/AppData/bluechat/uploads"
+UPLOAD_PUBLIC_PATH="/uploads"
+```
+
+BlueChat akan menyimpan avatar/lampiran ke `UPLOAD_DIR`, lalu membacanya melalui URL `/uploads/...`. Database hanya menyimpan path seperti `/uploads/avatars/file.jpg`, jadi pastikan folder `UPLOAD_DIR` tidak ikut terhapus saat redeploy.
+
+## Deploy Armbian/CasaOS
+
+Clone/pull repo di server Armbian, isi `.env` dengan `DATABASE_URL` production, lalu jalankan:
+
+```bash
+sudo APP_URL="https://bluechat.infotamadygital.com" \
+  SOCKET_URL="https://bluechat.infotamadygital.com" \
+  bash scripts/deploy-arambian.sh
+```
+
+Script akan membuat folder upload persisten di `/DATA/AppData/bluechat/uploads`, menjalankan Prisma migration, build Next.js, lalu membuat service systemd:
+
+```bash
+systemctl status bluechat-web
+systemctl status bluechat-socket
+```
+
+Jika realtime Socket.IO ingin aktif di domain yang sama, reverse proxy `/socket.io/` ke port `3001` dan web app ke port `3000`.
 
 ## Akun Dummy
 

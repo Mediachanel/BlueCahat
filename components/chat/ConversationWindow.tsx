@@ -51,7 +51,7 @@ export function ConversationWindow({
     return messages.filter((message) => message.content?.toLowerCase().includes(messageQuery.toLowerCase()));
   }, [messages, messageQuery]);
 
-  if (!conversation) return <div className="h-screen overflow-hidden bg-[#fbf8f3]"><EmptyConversation /></div>;
+  if (!conversation) return <div className="h-[100dvh] overflow-hidden bg-[#fbf8f3]"><EmptyConversation /></div>;
   const other = conversation.participants?.find((participant) => participant.user.id !== currentUserId)?.user;
   const title = conversation.type === "GROUP" ? conversation.title ?? "Grup" : other?.name ?? "Percakapan";
   const pinned = messages.find((message) => message.pinnedAt && !message.deletedForEveryone);
@@ -78,14 +78,14 @@ export function ConversationWindow({
   }
 
   return (
-    <section className="flex h-screen flex-col overflow-hidden bg-[#fbf8f3] dark:bg-slate-950">
-      <header className="flex h-16 shrink-0 items-center gap-3 border-b border-slate-200 bg-white px-4 dark:border-slate-800 dark:bg-slate-950 max-md:h-20 max-md:px-3">
+    <section className="flex h-[100dvh] flex-col overflow-hidden bg-[#fbf8f3] dark:bg-slate-950">
+      <header className="flex h-16 shrink-0 items-center gap-3 border-b border-slate-200 bg-white px-4 dark:border-slate-800 dark:bg-slate-950 max-md:h-14 max-md:px-2">
         <button onClick={onBack} aria-label="Kembali" className="hidden h-10 w-10 place-items-center rounded-full text-slate-700 max-md:grid">
           <ArrowLeft size={28} />
         </button>
         <UserAvatar name={title} src={conversation.image ?? other?.avatar} online={conversation.type === "PRIVATE" ? other?.isOnline : undefined} previewable />
         <div className="min-w-0">
-          <h2 className="truncate font-bold max-md:text-2xl">{title}</h2>
+          <h2 className="truncate font-bold max-md:text-base">{title}</h2>
           <p className="truncate text-xs text-bluechat-muted max-md:text-sm">{typing ? "sedang menulis pesan..." : conversation.type === "GROUP" ? `${memberNames || memberCount + " anggota"}` : other?.isOnline ? "online" : "last seen tersedia"}</p>
         </div>
         <div className="ml-auto flex items-center gap-1">

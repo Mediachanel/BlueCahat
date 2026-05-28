@@ -28,7 +28,7 @@ export function MessageList({
   onNotice?: (message: string) => void;
   appearanceSettings?: AppearanceSettings;
 }) {
-  const endRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
   const background = resolveChatBackground(appearanceSettings);
   const chatStyle = useMemo(
     () =>
@@ -48,9 +48,14 @@ export function MessageList({
       message.statuses?.some((status) => status.userId === currentUserId && status.status !== "READ")
   ).length;
 
-  useEffect(() => endRef.current?.scrollIntoView({ behavior: "smooth" }), [messages.length]);
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
+    list.scrollTo({ top: list.scrollHeight, behavior: "smooth" });
+  }, [messages.length]);
+
   return (
-    <div className="relative flex-1 space-y-3 overflow-y-auto p-6 max-md:px-3 max-md:py-4" style={chatStyle}>
+    <div ref={listRef} className="relative min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain p-6 max-md:px-3 max-md:py-4" style={chatStyle}>
       <div className="relative mx-auto mb-4 w-fit rounded-full bg-white px-4 py-2 text-xs font-semibold text-slate-500 shadow-sm dark:bg-slate-900 dark:text-slate-300">Hari Ini</div>
       <div className="relative space-y-3">
         {messages.map((message) => (
@@ -69,7 +74,6 @@ export function MessageList({
         ))}
         {unreadCount > 0 ? <div className="mx-auto w-fit rounded-full bg-white px-5 py-2 text-sm font-bold text-slate-700 shadow-sm dark:bg-slate-900 dark:text-slate-200">{unreadCount} pesan belum dibaca</div> : null}
       </div>
-      <div ref={endRef} />
     </div>
   );
 }

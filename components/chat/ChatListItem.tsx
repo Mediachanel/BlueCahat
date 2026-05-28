@@ -11,16 +11,20 @@ export function ChatListItem({ conversation, currentUserId, active, onClick }: {
   const preview = other?.isOnline && !last ? "online" : last?.deletedForEveryone ? "Pesan dihapus" : last?.content ?? "Belum ada pesan";
   const unreadCount = conversation.unreadCount ?? 0;
   return (
-    <button onClick={onClick} className={cn("flex w-full items-center gap-3 rounded-2xl p-3 text-left transition hover:bg-slate-50 dark:hover:bg-slate-900 max-md:rounded-none max-md:px-1 max-md:py-3", active && "bg-[#f3f6f9] dark:bg-slate-900 max-md:bg-transparent")}>
-      <UserAvatar name={title} src={conversation.image ?? other?.avatar} online={conversation.type === "PRIVATE" ? other?.isOnline : undefined} />
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center justify-between gap-2">
-          <p className="truncate font-bold max-md:text-lg">{title}</p>
-          {last ? <span className="text-xs text-bluechat-muted max-md:text-sm">{formatTime(last.createdAt)}</span> : null}
-        </div>
-        <p className={cn("truncate text-sm text-bluechat-muted max-md:text-base", other?.isOnline && "text-bluechat-blue")}>{preview}</p>
+    <button onClick={onClick} className={cn("flex w-full items-center gap-3 rounded-none px-4 py-3 text-left transition hover:bg-[#f5f6f6] dark:hover:bg-slate-900", active && "bg-[#f0f2f5] dark:bg-slate-900")}>
+      <div className="h-12 w-12 shrink-0">
+        <UserAvatar name={title} src={conversation.image ?? other?.avatar} online={conversation.type === "PRIVATE" ? other?.isOnline : undefined} />
       </div>
-      {unreadCount > 0 ? <span className="grid h-6 min-w-6 place-items-center rounded-full bg-bluechat-blue px-2 text-xs font-bold text-white max-md:h-6 max-md:min-w-6 max-md:text-xs">{unreadCount}</span> : null}
+      <div className="min-w-0 flex-1 border-b border-slate-100 pb-3 dark:border-slate-800">
+        <div className="flex items-center justify-between gap-2">
+          <p className="truncate text-[17px] font-semibold text-slate-950 dark:text-slate-100">{title}</p>
+          {last ? <span className={cn("text-xs text-slate-500", unreadCount > 0 && "font-bold text-[#00a884]")}>{formatTime(last.createdAt)}</span> : null}
+        </div>
+        <div className="mt-0.5 flex items-center gap-2">
+          <p className={cn("min-w-0 flex-1 truncate text-[15px] text-slate-500", other?.isOnline && "text-[#00a884]")}>{preview}</p>
+          {unreadCount > 0 ? <span className="grid h-5 min-w-5 place-items-center rounded-full bg-[#00a884] px-1.5 text-[11px] font-bold text-white">{unreadCount > 99 ? "99+" : unreadCount}</span> : null}
+        </div>
+      </div>
     </button>
   );
 }

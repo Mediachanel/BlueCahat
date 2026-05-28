@@ -10,6 +10,7 @@ UPLOAD_DIR="${UPLOAD_DIR:-/DATA/AppData/bluechat/uploads}"
 UPLOAD_PUBLIC_PATH="${UPLOAD_PUBLIC_PATH:-/uploads}"
 ENV_FILE="${ENV_FILE:-$APP_DIR/.env}"
 PULL_LATEST="${PULL_LATEST:-0}"
+INSTALL_MODE="${INSTALL_MODE:-install}"
 
 if [ "$(id -u)" -ne 0 ]; then
   echo "Re-running with sudo so systemd services and upload folders can be configured..."
@@ -106,12 +107,12 @@ chown -R "$RUN_USER:$RUN_GROUP" "$APP_DIR"
 chown -R "$RUN_USER:$RUN_GROUP" "$UPLOAD_DIR"
 chown "$RUN_USER:$RUN_GROUP" "$ENV_FILE"
 
-if [ -f package-lock.json ]; then
+if [ "$INSTALL_MODE" = "ci" ] && [ -f package-lock.json ]; then
   if ! run_as_app_user "npm ci"; then
     echo
     echo "npm ci failed, likely because an old node_modules folder could not be cleaned."
     echo "Removing Next.js native SWC packages and falling back to npm install..."
-    run_as_app_user "rm -rf node_modules/@next/swc-* node_modules/.package-lock.json"
+    run_as_app_user "rm -rf node_modules/@next/swc-* node_modules/.package-lock.json || true"
     run_as_app_user "npm install"
   fi
 else

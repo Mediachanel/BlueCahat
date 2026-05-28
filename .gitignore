@@ -1,0 +1,12 @@
+node_modules
+.next
+.env
+dist
+coverage
+*.tsbuildinfo
+public/uploads/*
+!public/uploads/.gitkeep
+public/avatars/*
+!public/avatars/.gitkeep
+!public/avatars/default-user.png
+!public/avatars/group-blue-team.png

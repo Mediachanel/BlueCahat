@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 210 100% 99%;
+  --foreground: 222 47% 11%;
+  --border: 210 40% 90%;
+  --input: 210 40% 92%;
+  --ring: 207 90% 54%;
+}
+
+.dark {
+  --background: 222 47% 8%;
+  --foreground: 210 40% 98%;
+  --border: 215 28% 18%;
+  --input: 215 28% 18%;
+  --ring: 207 90% 54%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background: #f8fbff;
+  color: #0f172a;
+}
+
+.dark body {
+  background: #07111f;
+  color: #f8fafc;
+}
+
+::selection {
+  background: #1e88e5;
+  color: white;
+}
+
+@layer components {
+  .blue-card {
+    @apply rounded-2xl border border-blue-100/80 bg-white shadow-soft dark:border-slate-800 dark:bg-slate-950;
+  }
+
+  .blue-input {
+    @apply w-full rounded-2xl border border-blue-100 bg-white px-4 py-3 text-sm outline-none transition focus:border-bluechat-blue focus:ring-4 focus:ring-blue-100 dark:border-slate-800 dark:bg-slate-900 dark:focus:ring-slate-800;
+  }
+
+  .blue-button {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-bluechat-navy px-4 py-3 text-sm font-semibold text-white shadow-soft transition hover:bg-bluechat-blue disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .blue-button-soft {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-bluechat-light px-4 py-3 text-sm font-semibold text-bluechat-navy transition hover:bg-blue-100 dark:bg-slate-900 dark:text-blue-200 dark:hover:bg-slate-800;
+  }
+}

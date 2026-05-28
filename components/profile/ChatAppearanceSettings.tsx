@@ -8,7 +8,6 @@ import {
   chatFontFamilyOptions,
   getChatFontFamily,
   resolveChatBackground,
-  type ChatBackgroundId,
   type ChatFontFamilyId
 } from "@/lib/appearance-settings";
 import { Button } from "@/components/ui/button";

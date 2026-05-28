@@ -107,7 +107,13 @@ chown -R "$RUN_USER:$RUN_GROUP" "$UPLOAD_DIR"
 chown "$RUN_USER:$RUN_GROUP" "$ENV_FILE"
 
 if [ -f package-lock.json ]; then
-  run_as_app_user "npm ci"
+  if ! run_as_app_user "npm ci"; then
+    echo
+    echo "npm ci failed, likely because an old node_modules folder could not be cleaned."
+    echo "Removing Next.js native SWC packages and falling back to npm install..."
+    run_as_app_user "rm -rf node_modules/@next/swc-* node_modules/.package-lock.json"
+    run_as_app_user "npm install"
+  fi
 else
   run_as_app_user "npm install"
 fi

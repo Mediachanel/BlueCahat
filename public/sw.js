@@ -1,8 +1,7 @@
-const CACHE_VERSION = "bluechat-v2";
+const CACHE_VERSION = "bluechat-v3";
 const APP_SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const APP_SHELL = [
-  "/",
   "/offline.html",
   "/manifest.webmanifest",
   "/icons/icon-192.png",
@@ -37,17 +36,14 @@ self.addEventListener("fetch", (event) => {
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request)
-        .then((response) => {
-          const responseCopy = response.clone();
-          caches.open(APP_SHELL_CACHE).then((cache) => cache.put(request, responseCopy));
-          return response;
-        })
-        .catch(() => caches.match(request).then((cached) => cached || caches.match("/offline.html")))
+        .catch(() => caches.match("/offline.html"))
     );
     return;
   }
 
-  if (url.pathname.startsWith("/_next/") || url.pathname.startsWith("/icons/") || url.pathname.startsWith("/logo/") || url.pathname.startsWith("/avatars/")) {
+  if (url.pathname.startsWith("/_next/")) return;
+
+  if (url.pathname.startsWith("/icons/") || url.pathname.startsWith("/logo/") || url.pathname.startsWith("/avatars/")) {
     event.respondWith(
       caches.match(request).then((cached) => {
         if (cached) return cached;
